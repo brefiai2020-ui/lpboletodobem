@@ -197,12 +197,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     if(S.phone.replace(/\D/g,'').length<10){er.textContent='Digite um WhatsApp com DDD.';return}
     if(!/^\S+@\S+\.\S+$/.test(S.email)){er.textContent='Digite um e-mail válido.';return}
     $('nx').disabled=true;$('nx').textContent='Enviando…';
-    var payload={slug:CONFIG.slug,name:S.name,phone:S.phone,email:S.email,city:S.city,state:S.state,desired_value:S.credito,interest_type:S.obj,extra:{prazo:S.prazo,parcela_estimada:Math.round(parcela()),perfil:S.perfil}};
+    var payload={slug:CONFIG.slug,name:S.name,phone:S.phone,email:S.email,city:S.city,state:S.state,desired_value:S.credito,interest_type:({'Imóvel':'imovel','Veículo':'veiculo','Moto':'veiculo','Serviços':'servicos'})[S.obj]||'outros',extra:{prazo:S.prazo,parcela_estimada:Math.round(parcela()),perfil:S.perfil}};
     var u=utm();for(var k in u)payload[k]=u[k];
     var finish=function(){step=5;render()};
+    var fail=function(){$('nx').disabled=false;$('nx').textContent='Enviar';$('er').textContent='Não foi possível enviar agora. Tente de novo em instantes.'};
     try{
-      fetch(CONFIG.leadEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(finish,finish);
-    }catch(e){finish()}
+      fetch(CONFIG.leadEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(function(r){return r.json().then(function(j){if(r.ok&&j&&j.ok)finish();else fail()},fail)},fail);
+    }catch(e){fail()}
   }
   render();
 })();
