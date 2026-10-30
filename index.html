@@ -1,0 +1,211 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Boleto do Bem</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: hero with boleto-slip motif on the right; the multi-step simulator is the slip itself. Single red/white look. */
+:root{
+  --red:#C8102E; --red-d:#9E0B23; --red-l:#FDECEF;
+  --white:#FFFFFF; --ink:#2B1215; --ink2:#6B4A4E; --line:#EBD3D6; --paper:#FFF9F9;
+  --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+  --body:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',ui-monospace,monospace;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--white);color:var(--ink);font:16px/1.6 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin-inline:auto}
+h1,h2,h3{font-family:var(--display);line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.02em}
+a{color:inherit}
+.btn{display:inline-block;border:0;cursor:pointer;font:700 .9rem var(--body);letter-spacing:.06em;text-transform:uppercase;padding:14px 26px;border-radius:6px;background:var(--red);color:#fff;text-decoration:none;transition:background .15s,transform .15s}
+.btn:hover{background:var(--red-d);transform:translateY(-1px)}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+.btn.ghost{background:transparent;color:var(--red);box-shadow:inset 0 0 0 2px var(--red)}
+.btn.ghost:hover{background:var(--red-l)}
+
+nav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px}
+.logo{font:800 1.25rem var(--display);color:var(--red);text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo i{display:inline-block;width:26px;height:18px;border-radius:3px;background:repeating-linear-gradient(90deg,var(--red) 0 2px,transparent 2px 4px,var(--red) 4px 5px,transparent 5px 8px)}
+
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding-block:36px 72px}
+@media(max-width:860px){.hero{grid-template-columns:1fr;gap:36px}}
+.eyebrow{font:500 .75rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:block}
+.hero h1{font-size:clamp(2.4rem,6vw,4.2rem);font-weight:800}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p.sub{font-size:1.1rem;color:var(--ink2);max-width:46ch;margin:20px 0 28px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.chip{border:1px solid var(--line);background:var(--paper);border-radius:99px;padding:5px 14px;font-size:.8rem;color:var(--ink2)}
+.chip b{color:var(--red)}
+
+/* boleto slip */
+.slip{background:var(--paper);border:2px solid var(--red);border-radius:10px;position:relative;box-shadow:0 18px 44px rgba(200,16,46,.14);overflow:hidden}
+.slip-top{background:var(--red);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 20px;font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.slip-body{padding:24px 22px 26px;min-height:380px;display:flex;flex-direction:column}
+.slip-foot{border-top:2px dashed var(--red);padding:12px 20px;font:400 .72rem var(--mono);color:var(--ink2);overflow-wrap:anywhere;background:var(--white)}
+.bar{display:flex;gap:4px;margin-bottom:20px}
+.bar span{flex:1;height:5px;border-radius:3px;background:var(--line);transition:background .25s}
+.bar span.on{background:var(--red)}
+.q{font:700 1.45rem var(--display);margin-bottom:6px}
+.hint{color:var(--ink2);font-size:.88rem;margin:0 0 18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:420px){.opts{grid-template-columns:1fr}}
+.opt{font:500 .95rem var(--body);text-align:left;padding:14px 16px;border-radius:8px;border:1.5px solid var(--line);background:var(--white);color:var(--ink);cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--red)}
+.opt.sel{border-color:var(--red);background:var(--red-l);box-shadow:inset 0 0 0 1px var(--red)}
+.opt small{display:block;color:var(--ink2);font-size:.76rem;margin-top:2px}
+.nav-row{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:22px}
+.back{background:none;border:0;color:var(--ink2);font:500 .85rem var(--body);cursor:pointer;text-decoration:underline}
+.big{font:800 2.2rem var(--display);color:var(--red);font-variant-numeric:tabular-nums}
+.res{display:grid;gap:10px;margin-bottom:16px}
+.res div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line);padding-bottom:8px;font-size:.92rem}
+.res div span:last-child{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.perfil{background:var(--red-l);border-radius:8px;padding:14px 16px;margin-bottom:10px;font-size:.92rem}
+.perfil b{color:var(--red);font-family:var(--display);font-size:1.05rem;display:block}
+.fine{font-size:.74rem;color:var(--ink2);line-height:1.5;margin:6px 0 0}
+label{display:block;font:500 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:4px}
+input,select{width:100%;font:400 1rem var(--body);padding:11px 12px;border:1.5px solid var(--line);border-radius:6px;background:var(--white);color:var(--ink)}
+input:focus,select:focus{border-color:var(--red)}
+.fields{display:grid;gap:12px}
+.two{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+.err{color:var(--red-d);font-size:.82rem;min-height:1.2em;margin-top:8px}
+.done{text-align:center;margin:auto;padding:10px 0}
+.done svg{width:60px;height:60px}
+.done h3{font-size:1.7rem;margin:12px 0 8px}
+.done p{color:var(--ink2);max-width:34ch;margin:0 auto}
+
+section.how{background:var(--red);color:#fff;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px));padding-block:72px}
+.how h2{font-size:clamp(1.9rem,4vw,2.8rem);margin-bottom:34px;max-width:18ch}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.step{background:#fff;color:var(--ink);border-radius:8px;padding:22px}
+.step h3{font-size:1.15rem;color:var(--red);margin-bottom:8px}
+.step p{margin:0;font-size:.92rem;color:var(--ink2)}
+section.faq{padding-block:72px}
+.faq h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:24px}
+details{border-top:1px solid var(--line);padding:16px 0}
+details:last-child{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font:700 1.05rem var(--display);list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:'+';color:var(--red);font-size:1.4rem;line-height:1}
+details[open] summary::after{content:'–'}
+details p{color:var(--ink2);margin:10px 0 0;max-width:62ch}
+footer{background:var(--ink);color:#f2dfe1;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:30px max(16px,env(safe-area-inset-left,0px));font-size:.8rem}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <nav>
+    <a class="logo" href="#topo"><i></i>Boleto do Bem</a>
+    <a class="btn" href="#simular">Simular agora</a>
+  </nav>
+
+  <header class="hero" id="topo">
+    <div>
+      <span class="eyebrow">Consórcio sem juros</span>
+      <h1>Um boleto por mês. <em>Um sonho conquistado.</em></h1>
+      <p class="sub">Imóvel, carro, moto ou serviços com parcelas que cabem no seu bolso e sem juros de financiamento. Faça a simulação em menos de um minuto e receba o retorno de um consultor.</p>
+      <a class="btn" href="#simular">Fazer minha simulação</a>
+      <div class="chips">
+        <span class="chip"><b>Sem juros</b> de financiamento</span>
+        <span class="chip">Simulação <b>gratuita</b></span>
+        <span class="chip">Atendimento <b>pelo WhatsApp</b></span>
+      </div>
+    </div>
+
+    <div class="slip" id="simular">
+      <div class="slip-top"><span>Simulador Boleto do Bem</span><span id="stepLabel">Etapa 1 de 6</span></div>
+      <div class="slip-body">
+        <div class="bar" id="bar"></div>
+        <div id="stage"></div>
+      </div>
+      <div class="slip-foot" id="linha">00190.00009 01234.567890 12345.678901 1 00000000000000</div>
+    </div>
+  </header>
+</div>
+
+<section class="how" id="como">
+  <div class="wrap">
+    <h2>Como funciona o consórcio</h2>
+    <div class="steps">
+      <div class="step"><h3>Você entra num grupo</h3><p>Pessoas com o mesmo objetivo pagam parcelas mensais para formar um fundo comum.</p></div>
+      <div class="step"><h3>Todo mês tem contemplação</h3><p>Por sorteio ou lance, participantes recebem a carta de crédito para comprar o bem.</p></div>
+      <div class="step"><h3>Você compra à vista</h3><p>Com a carta em mãos, você negocia como quem paga à vista e escolhe o bem.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="faq">
+    <h2>Perguntas frequentes</h2>
+    <details><summary>Consórcio tem juros?</summary><p>Não. Existe taxa de administração e fundo de reserva, definidos em contrato, e não há juros de financiamento.</p></details>
+    <details><summary>Posso usar um lance?</summary><p>Sim. O lance pode antecipar a contemplação e é opcional. Um consultor explica as opções do seu grupo.</p></details>
+    <details><summary>A simulação tem compromisso?</summary><p>Nenhum. Os valores mostrados são estimativas e o consultor confirma as condições reais antes de qualquer contratação.</p></details>
+  </section>
+</div>
+
+<footer><div class="wrap"><strong>Boleto do Bem</strong><span>Valores simulados são estimativas e não representam proposta. Condições sujeitas ao contrato do grupo.</span></div></footer>
+
+<script>
+(function(){
+  var CONFIG={slug:'boleto-do-bem',leadEndpoint:'https://hghhmodyvutwhimeihwq.supabase.co/functions/v1/form-submit'};
+  var S={obj:null,credito:null,prazo:null};
+  var step=0,TOTAL=6;
+  var OBJ=[['Imóvel','Casa, apartamento ou terreno'],['Veículo','Carro novo ou seminovo'],['Moto','Cilindrada que você escolher'],['Serviços','Reforma, viagem, estudos']];
+  var CRED={'Imóvel':[150000,250000,400000,600000],'Veículo':[50000,80000,120000,180000],'Moto':[15000,25000,40000,60000],'Serviços':[10000,20000,40000,80000]};
+  var PRAZO={'Imóvel':[120,180,200],'Veículo':[60,72,80],'Moto':[36,48,60],'Serviços':[24,36,48]};
+  var TAXA=0.16;
+  var $=function(id){return document.getElementById(id)};
+  var brl=function(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0})};
+  var parcela=function(){return S.credito*(1+TAXA)/S.prazo};
+  function utm(){var o={};try{new URLSearchParams(location.search).forEach(function(v,k){if(k.indexOf('utm_')===0)o[k]=v})}catch(e){}return o}
+  function bar(){var h='';for(var i=0;i<TOTAL;i++)h+='<span class="'+(i<=step?'on':'')+'"></span>';$('bar').innerHTML=h;$('stepLabel').textContent=step<TOTAL?'Etapa '+(step+1)+' de '+TOTAL:'Concluído'}
+  function linha(){var n=S.credito?String(Math.round(parcela()*100)).padStart(10,'0'):'0000000000';$('linha').textContent='00190.00009 01234.567890 12345.678901 1 '+n}
+  function opts(list,key,fmt,sub){
+    return '<div class="opts">'+list.map(function(v){var l=fmt?fmt(v):v[0];var s=sub?sub(v):(v[1]||'');return '<button type="button" class="opt'+(S[key]===(fmt?v:v[0])?' sel':'')+'" data-k="'+key+'" data-v="'+(fmt?v:v[0])+'">'+l+(s?'<small>'+s+'</small>':'')+'</button>'}).join('')+'</div>';
+  }
+  function nav(canNext,label,backOk){
+    return '<div class="nav-row">'+(backOk?'<button type="button" class="back" id="bk">Voltar</button>':'<span></span>')+'<button type="button" class="btn" id="nx"'+(canNext?'':' disabled')+'>'+(label||'Continuar')+'</button></div>';
+  }
+  function render(){
+    bar();linha();var h='';
+    if(step===0){h='<div class="q">O que você quer conquistar?</div><p class="hint">Escolha o objetivo do seu consórcio.</p>'+opts(OBJ,'obj')+nav(!!S.obj,'Continuar',false)}
+    else if(step===1){h='<div class="q">Qual o valor do crédito?</div><p class="hint">Valor da carta de crédito para '+S.obj.toLowerCase()+'.</p>'+opts(CRED[S.obj],'credito',brl,function(){return ''})+nav(!!S.credito,'Continuar',true)}
+    else if(step===2){h='<div class="q">Em quanto tempo quer pagar?</div><p class="hint">Prazos maiores deixam a parcela menor.</p>'+opts(PRAZO[S.obj],'prazo',function(v){return v+' meses'},function(v){return brl(S.credito*(1+TAXA)/v)+' por mês'})+nav(!!S.prazo,'Ver resultado',true)}
+    else if(step===3){
+      var p=parcela(),perfil=S.prazo>=PRAZO[S.obj][2]?['Planejador de longo prazo','Parcela leve e foco em constância. Ideal para quem constrói devagar e sem pressa.']:S.prazo===PRAZO[S.obj][0]?['Realizador acelerado','Parcela maior e conquista mais cedo. Um lance pode antecipar ainda mais.']:['Equilibrado','Boa relação entre parcela e tempo. Combina com a maioria dos grupos.'];
+      h='<div class="q">Seu boleto do bem</div><div class="big">'+brl(p)+'<span style="font-size:1rem;font-weight:500;color:var(--ink2)"> /mês</span></div><div class="res" style="margin-top:14px"><div><span>Objetivo</span><span>'+S.obj+'</span></div><div><span>Crédito</span><span>'+brl(S.credito)+'</span></div><div><span>Prazo</span><span>'+S.prazo+' meses</span></div></div><div class="perfil"><b>Perfil: '+perfil[0]+'</b>'+perfil[1]+'</div><p class="fine">Estimativa com taxa de administração e fundo de reserva de referência. O consultor confirma as condições reais.</p>'+nav(true,'Receber proposta',true);S.perfil=perfil[0]}
+    else if(step===4){h='<div class="q">Para onde enviamos a proposta?</div><p class="hint">Um consultor chama você no WhatsApp.</p><div class="fields"><div><label for="fn">Nome completo</label><input id="fn" autocomplete="name" value="'+(S.name||'')+'"></div><div><label for="fp">WhatsApp</label><input id="fp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" value="'+(S.phone||'')+'"></div><div><label for="fe">E-mail</label><input id="fe" type="email" autocomplete="email" value="'+(S.email||'')+'"></div><div class="two"><div><label for="fc">Cidade</label><input id="fc" autocomplete="address-level2" value="'+(S.city||'')+'"></div><div><label for="fu">UF</label><input id="fu" maxlength="2" autocomplete="address-level1" value="'+(S.state||'')+'"></div></div></div><div class="err" id="er" role="alert"></div>'+nav(true,'Enviar',true)}
+    else{h='<div class="done"><svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="28" fill="#C8102E"/><path d="M17 31l9 9 17-19" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Recebemos seu pedido</h3><p>Um consultor entra em contato pelo WhatsApp com sua proposta de '+brl(parcela())+' por mês.</p></div>'}
+    $('stage').innerHTML=h;
+    var nx=$('nx'),bk=$('bk');
+    if(nx)nx.onclick=next;if(bk)bk.onclick=function(){step--;render()};
+    document.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){var k=b.dataset.k,v=b.dataset.v;
+      if(k==='credito'||k==='prazo')v=Number(v);
+      if(k==='obj'&&S.obj!==v){S.credito=null;S.prazo=null}
+      if(k==='credito'&&S.credito!==v)S.prazo=null;
+      S[k]=v;render()}});
+  }
+  function next(){
+    if(step===4){submit();return}
+    step++;render();
+  }
+  function submit(){
+    S.name=$('fn').value.trim();S.phone=$('fp').value.trim();S.email=$('fe').value.trim();S.city=$('fc').value.trim();S.state=$('fu').value.trim().toUpperCase();
+    var er=$('er');
+    if(S.name.length<3){er.textContent='Digite seu nome completo.';return}
+    if(S.phone.replace(/\D/g,'').length<10){er.textContent='Digite um WhatsApp com DDD.';return}
+    if(!/^\S+@\S+\.\S+$/.test(S.email)){er.textContent='Digite um e-mail válido.';return}
+    $('nx').disabled=true;$('nx').textContent='Enviando…';
+    var payload={slug:CONFIG.slug,name:S.name,phone:S.phone,email:S.email,city:S.city,state:S.state,desired_value:S.credito,interest_type:S.obj,extra:{prazo:S.prazo,parcela_estimada:Math.round(parcela()),perfil:S.perfil}};
+    var u=utm();for(var k in u)payload[k]=u[k];
+    var finish=function(){step=5;render()};
+    try{
+      fetch(CONFIG.leadEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(finish,finish);
+    }catch(e){finish()}
+  }
+  render();
+})();
+</script>
+
+</body></html>
